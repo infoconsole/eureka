@@ -62,7 +62,7 @@ import javax.inject.Singleton;
  *
  * <p>
  * This binding mechanism gravitates towards one eureka server per zone for
- * resilience.Atleast one elastic ip should be slotted for each eureka server in
+ * resilience. At least one elastic ip should be slotted for each eureka server in
  * a zone. If more than eureka server is launched per zone and there are not
  * enough elastic ips slotted, the server tries to pick a free EIP slotted for other
  * zones and if it still cannot find a free EIP, waits and keeps trying.
@@ -101,12 +101,16 @@ public class EIPManager implements AwsBinder {
     }
 
     @PostConstruct
-    public void start() throws Exception {
-        handleEIPBinding();
+    public void start() {
+        try {
+            handleEIPBinding();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PreDestroy
-    public void shutdown() throws Exception {
+    public void shutdown() {
         timer.cancel();
         for (int i = 0; i < serverConfig.getEIPBindRebindRetries(); i++) {
             try {
@@ -114,7 +118,11 @@ public class EIPManager implements AwsBinder {
                 break;
             } catch (Exception e) {
                 logger.warn("Cannot unbind the EIP from the instance");
-                Thread.sleep(1000);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e1) {
+                    throw new RuntimeException(e1);
+                }
             }
         }
     }

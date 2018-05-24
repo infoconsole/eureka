@@ -319,7 +319,7 @@ public class InstanceInfo {
                     return InstanceStatus.valueOf(s.toUpperCase());
                 } catch (IllegalArgumentException e) {
                     // ignore and fall through to unknown
-                    if (logger.isDebugEnabled()) logger.debug("illegal argument supplied to InstanceStatus.valueOf: {}, defaulting to {}", s, UNKNOWN);
+                    logger.debug("illegal argument supplied to InstanceStatus.valueOf: {}, defaulting to {}", s, UNKNOWN);
                 }
             }
             return UNKNOWN;
@@ -1235,6 +1235,16 @@ public class InstanceInfo {
     public synchronized void setIsDirty() {
         isInstanceInfoDirty = true;
         lastDirtyTimestamp = System.currentTimeMillis();
+    }
+
+    /**
+     * Set the dirty flag, and also return the timestamp of the isDirty event
+     *
+     * @return the timestamp when the isDirty flag is set
+     */
+    public synchronized long setIsDirtyWithTime() {
+        setIsDirty();
+        return lastDirtyTimestamp;
     }
 
 

@@ -59,8 +59,8 @@ public class EurekaConfigBasedInstanceInfoProvider implements Provider<InstanceI
 
             // set the appropriate id for the InstanceInfo, falling back to datacenter Id if applicable, else hostname
             String instanceId = config.getInstanceId();
-            DataCenterInfo dataCenterInfo = config.getDataCenterInfo();
             if (instanceId == null || instanceId.isEmpty()) {
+                DataCenterInfo dataCenterInfo = config.getDataCenterInfo();
                 if (dataCenterInfo instanceof UniqueIdentifier) {
                     instanceId = ((UniqueIdentifier) dataCenterInfo).getId();
                 } else {
@@ -104,7 +104,7 @@ public class EurekaConfigBasedInstanceInfoProvider implements Provider<InstanceI
             // Start off with the STARTING state to avoid traffic
             if (!config.isInstanceEnabledOnit()) {
                 InstanceStatus initialStatus = InstanceStatus.STARTING;
-                LOG.info("Setting initial instance status as: " + initialStatus);
+                LOG.info("Setting initial instance status as: {}", initialStatus);
                 builder.setStatus(initialStatus);
             } else {
                 LOG.info("Setting initial instance status as: {}. This may be too early for the instance to advertise "
